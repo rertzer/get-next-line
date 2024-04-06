@@ -6,7 +6,7 @@
 /*   By: rertzer <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 11:36:06 by rertzer           #+#    #+#             */
-/*   Updated: 2022/11/23 14:12:57 by rertzer          ###   ########.fr       */
+/*   Updated: 2024/04/06 11:11:32 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,10 @@ char	*get_next_line(int fd)
 		return (NULL);
 	line->string = malloc(sizeof(char));
 	if (NULL == line->string)
+	{
+		free(line);
 		return (NULL);
+	}
 	line->string[0] = '\0';
 	line->len = 0;
 	line->next = NULL;
@@ -63,10 +66,10 @@ char	*get_line(int fd, t_list *line, t_buffer *buff)
 	t_list	*last;
 
 	last = line;
-	while (! last->len || last->string[last->len - 1] != '\n')
+	while (last->len == 0 || last->string[last->len - 1] != '\n')
 	{
 		if (buffer_update(fd, buff) <= 0)
-			return (list_join(line));
+			break ;
 		toappend_len = get_toappend_len(&buff->buffer[buff->start]);
 		last = ft_strappend(last, &buff->buffer[buff->start], toappend_len);
 		buff->start += toappend_len;
@@ -80,19 +83,20 @@ char	*list_join(t_list *line)
 	t_list		*lst;
 	char		*str;
 
-	lst = line;
 	len = 0;
+	lst = line;
+	str = NULL;
 	while (lst)
 	{
 		len += lst->len;
 		lst = lst->next;
 	}
-	if (len == 0)
-		return (NULL);
-	str = malloc(sizeof(char) * (len + 1));
-	if (str == NULL)
-		return (NULL);
-	list_join_util(line, str);
+	if (len != 0)
+	{
+		str = malloc(sizeof(char) * (len + 1));
+		if (str != NULL)
+			list_join_util(line, str);
+	}
 	return (str);
 }
 
@@ -101,9 +105,9 @@ ssize_t	get_toappend_len(char *buffer)
 	ssize_t	len;
 
 	len = 0;
-	while (buffer[len] && buffer[len] != '\n')
-		len++;
+	while (buffer[len] != '\0' && buffer[len] != '\n')
+		++len;
 	if (buffer[len] == '\n')
-		len++;
+		++len;
 	return (len);
 }
