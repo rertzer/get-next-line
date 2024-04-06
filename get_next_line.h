@@ -6,7 +6,7 @@
 /*   By: rertzer <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 09:20:26 by rertzer           #+#    #+#             */
-/*   Updated: 2024/04/06 11:14:23 by rertzer          ###   ########.fr       */
+/*   Updated: 2024/04/06 11:52:36 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ ssize_t	get_toappend_len(char *buffer);
 /* get_next_line_utils.c functions */
 ssize_t	buffer_update(int fd, t_buffer *buff);
 t_list	*ft_strappend(t_list *last, char *src, ssize_t len);
+void	ft_lst_strcpy(t_list *dest, char *src, ssize_t len);
 void	list_join_util(t_list *line, char *str);
+ssize_t	get_list_len(t_list *lst);
 
 #endif

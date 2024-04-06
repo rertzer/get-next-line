@@ -6,7 +6,7 @@
 /*   By: rertzer <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 09:26:02 by rertzer           #+#    #+#             */
-/*   Updated: 2024/04/06 11:13:48 by rertzer          ###   ########.fr       */
+/*   Updated: 2024/04/06 11:55:24 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,10 @@ char	*get_line(int fd, t_list *line, t_buffer *buff)
 	t_list	*last;
 
 	last = line;
-	while (! last->len || last->string[last->len - 1] != '\n')
+	while (last->len == 0 || last->string[last->len - 1] != '\n')
 	{
 		if (buffer_update(fd, buff) <= 0)
-			return (list_join(line));
+			break ;
 		toappend_len = get_toappend_len(&buff->buffer[buff->start]);
 		last = ft_strappend(last, &buff->buffer[buff->start], toappend_len);
 		buff->start += toappend_len;
@@ -70,22 +70,16 @@ char	*get_line(int fd, t_list *line, t_buffer *buff)
 char	*list_join(t_list *line)
 {
 	ssize_t		len;
-	t_list		*lst;
 	char		*str;
 
-	lst = line;
-	len = 0;
-	while (lst)
+	len = get_list_len(line);
+	str = NULL;
+	if (len != 0)
 	{
-		len += lst->len;
-		lst = lst->next;
+		str = malloc(sizeof(char) * (len + 1));
+		if (str != NULL)
+			list_join_util(line, str);
 	}
-	if (len == 0)
-		return (NULL);
-	str = malloc(sizeof(char) * (len + 1));
-	if (str == NULL)
-		return (NULL);
-	list_join_util(line, str);
 	return (str);
 }
 
@@ -95,8 +89,8 @@ ssize_t	get_toappend_len(char *buffer)
 
 	len = 0;
 	while (buffer[len] && buffer[len] != '\n')
-		len++;
+		++len;
 	if (buffer[len] == '\n')
-		len++;
+		++len;
 	return (len);
 }
